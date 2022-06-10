@@ -1,0 +1,3 @@
+runs:
+  using: 'docker'
+  image: 'ghcr.io/octojuice/compositecontainer:main'
