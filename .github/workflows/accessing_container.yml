@@ -37,3 +37,20 @@ jobs:
       # Reference the action.yml file that uses the container for a build, it could be checked out from another repository or location as long as the workflow has access
       - name: Hello world action step
         uses: ./comp-container-action 
+        
+        
+        
+      # Alternatively we can build the file and then call it ourselves
+      - name: Build action.yml reference
+        run: |
+          mkdir my-action
+          cat > my-action/action.yml <<EOF
+          runs:
+            using: docker
+            image: ${{ github.event.inputs.container_url }}
+          EOF
+          
+      - name: Invoke our local action
+        uses: ./my-action
+        
+      
