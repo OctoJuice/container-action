@@ -1,0 +1,39 @@
+name: Accessing Container
+
+on:
+  workflow_dispatch:
+    inputs:
+      container_url:
+        description: Container URL
+        type: string
+        required: true
+        default: ghcr.io/octojuice/compositecontainer:main
+  
+jobs:
+  run:
+    name: Run
+    runs-on: ubuntu-latest
+    
+    steps:
+      # This cannot work as it runs before any authentication steps can be performed
+#       - name: Run container as build step
+#         uses: ghcr.io/octojuice/compositecontainer:main
+        
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Fetch container
+        run:
+          docker pull ${{ github.event.inputs.container_url }}
+
+      # The repo has a directory actions-step-container that has the action.yml file with the using: docker reference to the container in it
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+      # Reference the action.yml file that uses the container for a build, it could be checked out from another repository or location as long as the workflow has access
+      - name: Hello world action step
+        uses: ./comp-container-action 
